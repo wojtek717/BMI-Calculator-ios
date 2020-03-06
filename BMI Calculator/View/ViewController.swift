@@ -5,41 +5,43 @@
 import UIKit
 
 class ViewController: UIViewController {
-    var calculatorBrain = CalculatorBrain()
-    
+    //var calculatorBrain = CalculatorBrain()
+
     @IBOutlet weak var heightLabel: UILabel!
     @IBOutlet weak var weightLabel: UILabel!
     
     @IBOutlet weak var heightSlider: UISlider!
     @IBOutlet weak var weightSlider: UISlider!
+  
+  var measurement : Measurement?
+  var measurementViewModel : MeasurementViewModel?
+  
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+      measurement = Measurement(weight: weightSlider.value, height: heightSlider.value)
+      measurementViewModel = MeasurementViewModel(measurement: measurement!)
     }
 
     @IBAction func heightSliderChange(_ sender: UISlider) {
-
-        heightLabel.text = ((String(format: "%.2f", sender.value)) + "m")
+      measurement?.height = sender.value
+      heightLabel.text = measurementViewModel?.heightText
     }
     
     @IBAction func weightSliderChange(_ sender: UISlider) {
-        weightLabel.text = String(format: "%.0f", sender.value) + "kg"
+      measurement?.weight = sender.value
+      weightLabel.text = measurementViewModel?.weightText
     }
     
     @IBAction func calculateButtonPressed(_ sender: UIButton) {
-        let height = heightSlider.value
-        let weight = weightSlider.value
-        
-        calculatorBrain.calculateBMI(height: height, weight: weight)
-        
         self.performSegue(withIdentifier: "goToResult", sender: self)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if(segue.identifier == "goToResult"){
             let destinationVC = segue.destination as! ResultViewController
-            destinationVC.bmi = calculatorBrain.getBMIText()
+          destinationVC.bmi = measurementViewModel?.bmiText
         }
     }
 
